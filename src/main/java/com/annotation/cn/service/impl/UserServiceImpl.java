@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
         userDao.insert(1, "刘松", 28);
         System.out.println("---- 向数据库添加数据 ----");
         // 加入事务：抛出异常，不继续执行，上面的数据未插入到数据库，数据回滚；
-//        int i = 10/0;
+        int i = 10/0;
         userDao.insert(2, "刘刘",18);
     }
 

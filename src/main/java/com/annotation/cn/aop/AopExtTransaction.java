@@ -10,6 +10,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.lang.reflect.Method;
 
@@ -27,15 +28,21 @@ public class AopExtTransaction {
     @Autowired
     private TransactionUtils transactionUtils;
 
+    /**
+     * 异常处理：回滚
+     */
     @AfterThrowing("execution(* com.annotation.cn.service.*.*(..)))")
     public void afterThrowing() {
-
+        //第一种：获取到当前事务进行回滚
+//         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        //第二种：调用封装的方法
+        transactionUtils.rollback();
     }
 
     /**
      * 环绕通知 在方法之前和之后处理事情
      */
-    @Around("execution(* com.annotation.cn.service.*.*.*(..))")
+    @Around("execution(* com.annotation.cn.service.*.*(..))")
     public void around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         //获取该方法上是否加注解
         ExtTransaction extTransaction = getExtTransaction(proceedingJoinPoint);
@@ -48,18 +55,6 @@ public class AopExtTransaction {
     }
 
     /**
-     * 提交事务
-     */
-    private void commit(TransactionStatus transactionStatus) {
-        //如果事务不为空，则提交事务
-        if (null != transactionStatus) {
-            System.out.println("---- 提交事务 ----");
-            transactionUtils.commit(transactionStatus);
-        }
-
-    }
-
-    /**
      * 开启事务
      */
     private TransactionStatus begin(ExtTransaction extTransaction) {
@@ -68,15 +63,24 @@ public class AopExtTransaction {
             return null;
         }
         //如果有自定义注解，开启事务
-        System.out.println("---- 开启事务 ----");
-        TransactionStatus transactionStatus = transactionUtils.begin();
-        return transactionStatus;
+        return transactionUtils.begin();
+    }
+
+    /**
+     * 提交事务
+     */
+    private void commit(TransactionStatus transactionStatus) {
+        //如果事务不为空，则提交事务
+        if (null != transactionStatus) {
+            transactionUtils.commit(transactionStatus);
+        }
+
     }
 
     /**
      * 获取注解
      */
-    public ExtTransaction getExtTransaction(ProceedingJoinPoint proceedingJoinPoint) throws NoSuchMethodException {
+    private ExtTransaction getExtTransaction(ProceedingJoinPoint proceedingJoinPoint) throws NoSuchMethodException {
         //获取方法名
         String methodName = proceedingJoinPoint.getSignature().getName();
         //获取目标对象

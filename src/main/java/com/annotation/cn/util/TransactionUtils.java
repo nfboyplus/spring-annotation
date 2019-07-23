@@ -18,6 +18,11 @@ import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 public class TransactionUtils {
 
     /**
+     * 全局接受事务状态
+     */
+    private TransactionStatus transactionStatus;
+
+    /**
      * 获取事务源
      */
     @Autowired
@@ -27,6 +32,7 @@ public class TransactionUtils {
      * 开启事务
      */
     public TransactionStatus begin(){
+        System.out.println("---- 开启事务 ----");
         TransactionStatus transaction = dataSourceTransactionManager.getTransaction(new DefaultTransactionAttribute());
         return transaction;
     }
@@ -35,14 +41,16 @@ public class TransactionUtils {
      * 提交事务
      */
     public void commit(TransactionStatus transaction){
+        System.out.println("---- 提交事务 ----");
         dataSourceTransactionManager.commit(transaction);
     }
 
     /**
      * 回滚事务
      */
-    public void rollback(TransactionStatus transaction){
-        dataSourceTransactionManager.rollback(transaction);
+    public void rollback(){
+        System.out.println("---- 事务回滚 ----");
+        dataSourceTransactionManager.rollback(transactionStatus);
     }
 
 }
