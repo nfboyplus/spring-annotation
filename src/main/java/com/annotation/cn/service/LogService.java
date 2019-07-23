@@ -1,14 +1,12 @@
 package com.annotation.cn.service;
 
 /**
- * created on 2019/7/22 9:34
+ * created on 2019/7/23 16:02
  *
  * @author nfboy_liusong@163.com
  * @version 1.0.0
  */
-public interface UserService {
+public interface LogService {
 
-    void insert();
-
-    void add();
+    void addLog();
 }

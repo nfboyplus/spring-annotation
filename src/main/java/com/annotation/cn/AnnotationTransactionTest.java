@@ -17,6 +17,7 @@ public class AnnotationTransactionTest {
     public static void main(String[] args){
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring.xml");
         UserService userService = (UserService) applicationContext.getBean("userServiceImpl");
-        userService.insert();
+//        userService.insert();
+        userService.add();
     }
 }
